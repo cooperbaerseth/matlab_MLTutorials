@@ -80,8 +80,8 @@ dataStd = std(meas)
 %the mean from each observation, and optionally, divide each by the 
 %standard deviation. Subtracting the mean centers the data on 0, and
 %dividing by the standard deviation normalizes the data.
-cleanData = (meas - repmat(dataMean,[n 1]))
-%cleanData = cleanData ./ repmat(dataStd, [n 1]) %optional
+centeredData = (meas - repmat(dataMean,[n 1]))
+%centeredData = centeredData ./ repmat(dataStd, [n 1]) %optional
 
 %In order to do element-wise subtraction of the mean, we create a matrix of 
 %the same size as meas where each row is the dataMeans matrix.
@@ -96,7 +96,7 @@ cleanData = (meas - repmat(dataMean,[n 1]))
 %data's covariance matrix. The eigenvectors will be the principal component
 %coefficients, and the corresponding eigenvalues correspond to the ammount
 %of variance their respective principal component encapsulates.
-[coeffs vars] = eig(cov(cleanData))
+[coeffs vars] = eig(cov(centeredData))
 vars = diag(vars);   %isolate the eigenvalues (variances)
 
 %eig does not necessarily give the eigenvalue-eigenvector pairs in a particular order. We need to sort them in decreasing order so that
@@ -108,7 +108,7 @@ vars
 %Now we are set up to take the data from it's original coordinate system to
 %the PCA coordinate system. All we have to do is multiply the data matrix
 %with the principal component coefficient matrix.
-pcaData = cleanData * coeffs
+pcaData = centeredData * coeffs
 
 %So now we've obtained the principal components of the data. The columns of
 %pcaData correspond to the principal components (col1 = principal
@@ -179,11 +179,11 @@ testFlowers = [6.1 2.7 5.0 1.6; 5.3 3.2 2.1 0.4; 7.75 3.5 6.1 2.0]
 
 %Don't forget to subtract the mean of the original data.
 [tn tm] = size(testFlowers);
-cleanTestFlowers = testFlowers - repmat(dataMean,[tn 1])
+centeredTestFlowers = testFlowers - repmat(dataMean,[tn 1])
 
-%After cleaning, we take the test data to the PCA coordinate space by 
+%After centering, we take the test data to the PCA coordinate space by 
 %multiplying it by our original PCA coefficients.
-pcaTestData = cleanTestFlowers * coeffs
+pcaTestData = centeredTestFlowers * coeffs
 
 %Now we can plot the test data over our original PCA graph to see where it
 %lands. Our first test point is a magenta astrisk, the second is the plus,
@@ -220,4 +220,3 @@ end
 %graphs), 1 (setosa or blue), and 3 (virginica or green). By going back to
 %look at our PC1 vs PC2 graph, we can see that we successfully classified
 %our test set to the nearest neighbor.
-
